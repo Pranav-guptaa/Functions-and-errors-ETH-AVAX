@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Contract Frontend</title>
+    <!-- Include web3.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.5/web3.min.js"></script>
+</head>
+<body>
+    <!-- Heading for the frontend application -->
+    <h1>Smart Contract Frontend</h1>
+    <!-- Displaying the value of Value 1 from the smart contract -->
+    <label for="value1">Value 1: </label>
+    <span id="value1"></span>
+    <br>
+    <!-- Displaying the value of Value 2 from the smart contract -->
+    <label for="value2">Value 2: </label>
+    <span id="value2"></span>
+    <br>
+    <!-- Displaying the value of Message from the smart contract -->
+    <label for="message">Message: </label>
+    <span id="message"></span>
+    <br>
+    <!-- Button to trigger setting the value of Value 1 in the smart contract -->
+    <button onclick="setValue1()">Set Value 1</button>
+    <!-- Button to trigger setting the value of Value 2 in the smart contract -->
+    <button onclick="setValue2()">Set Value 2</button>
+    <!-- Button to trigger setting the value of Message in the smart contract -->
+    <button onclick="setMessage()">Set Message</button>
+
+    <!-- JavaScript code using web3.js to interact with the smart contract -->
+    <script>
+        // Connect to the Ethereum blockchain using web3.js
+        const web3 = new Web3("https://ropsten.infura.io/v3/93e5252a8c404e7897ed4abbfc8825ea");
+
+        // Instantiate the smart contract with its address and ABI
+        const contractAddress = "0x1234567890abcdef1234567890abcdef12345678";
+        const contractABI = [{"constant":true,"inputs":[],"name":"value1","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"value2","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"message","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newValue","type":"uint256"}],"name":"setValue1","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_newValue","type":"uint256"}],"name":"setValue2","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_newMessage","type":"string"}],"name":"setMessage","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}];
+        const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+        // Function to update the frontend with values from the smart contract
+        async function updateValues() {
+            // Retrieve the values from the smart contract
+            const value1 = await contract.methods.value1().call();
+            const value2 = await contract.methods.value2().call();
+            const message = await contract.methods.message().call();
+
+            // Display the values on the frontend
+            document.getElementById("value1").textContent = value1;
+            document.getElementById("value2").textContent = value2;
+            document.getElementById("message").textContent = message;
+        }
+
+        // Function to set value1 in the smart contract
+        async function setValue1() {
+            // Prompt user to enter the new value for Value 1
+            const newValue1 = parseInt(prompt("Enter new value for Value 1:"));
+            // Call the setValue1 function of the smart contract
+            await contract.methods.setValue1(newValue1).send({ from: "0x1234567890abcdef1234567890abcdef12345678" });
+            // Update the frontend with the new values
+            updateValues();
+        }
+
+        // Function to set value2 in the smart contract
+        async function setValue2() {
+            // Prompt user to enter the new value for Value 2
+            const newValue2 = parseInt(prompt("Enter new value for Value 2:"));
+            // Call the setValue2 function of the smart contract
+            await contract.methods.setValue2(newValue2).send({ from: "0x1234567890abcdef1234567890abcdef12345678" });
+            // Update the frontend with the new values
+            updateValues();
+        }
+
+        // Function to set message in the smart contract
+        async function setMessage() {
+            // Prompt user to enter the new message
+            const newMessage = prompt("Enter new message:");
+            // Call the setMessage function of the smart contract
+            await contract.methods.setMessage(newMessage).send({ from: "0x1234567890abcdef1234567890abcdef12345678" });
+            // Update the frontend with the new values
+            updateValues();
+        }
+
+        // Initial update of values on page load
